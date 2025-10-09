@@ -6,15 +6,18 @@ char ssid[] = "vivo V29e 5G";       // <<!>> ใส่ชื่อ WiFi ขอ�
 char pass[] = "2345rocth";   // <<!>> ใส่รหัสผ่าน WiFi ของคุณ
 
 // ----- ตั้งค่า MQTT -----
-const char broker[] = "test.mosquitto.org"; // Broker สาธารณะ
+const char broker[] = "broker.hivemq.com"; // Broker สาธารณะ
 int        port     = 1883;
 const char pubTopic[] = "arduino/r4/status"; // Topic สำหรับส่งข้อมูล
 const char subTopic[] = "arduino/r4/led";    // Topic สำหรับรับคำสั่ง
+const char subRelay[] = "arduino/r4/relay";
 
 WiFiClient wifiClient;
 MqttClient mqttClient(wifiClient);
 
 unsigned long lastMillis = 0;
+
+#define Relay 8
 
 void setup() {
   Serial.begin(115200);
@@ -23,6 +26,9 @@ void setup() {
   // ตั้งค่า LED Built-in
   pinMode(LED_BUILTIN, OUTPUT);
   digitalWrite(LED_BUILTIN, LOW);
+  //ตั้งค่า Relay 
+  pinMode(Relay, OUTPUT);
+
 
   // เชื่อมต่อ WiFi
   Serial.print("Attempting to connect to SSID: ");
@@ -45,10 +51,12 @@ void setup() {
   }
   Serial.println("You're connected to the MQTT broker!");
 
-  // Subscribe รอรับคำสั่ง
+   // Subscribe รอรับคำสั่ง
   mqttClient.subscribe(subTopic);
+  mqttClient.subscribe(subRelay);
   // ตั้งค่าฟังก์ชันที่จะทำงานเมื่อมีข้อความเข้ามา
   mqttClient.onMessage(onMqttMessage);
+ 
 }
 
 void loop() {
@@ -64,13 +72,11 @@ void loop() {
     mqttClient.print("Hello from Arduino!");
     mqttClient.endMessage();
   }
+
+  
 }
 
-void Controlspeed(int value) {
 
-
-
-}
 // ฟังก์ชันที่จะทำงานเมื่อมีข้อความเข้ามาใน Topic ที่เรา Subscribe ไว้
 void onMqttMessage(int messageSize) {
   Serial.print("Received a message on topic: ");
@@ -89,5 +95,15 @@ void onMqttMessage(int messageSize) {
   } else if (message == "OFF") {
     digitalWrite(LED_BUILTIN, LOW);
     Serial.println("LED is OFF");
+  }
+
+  if (message == "Relay ON"){
+    digitalWrite(Relay, HIGH);
+    Serial.println("Relay : turn ON");
+  }
+  else if(message == "Relay OFF")
+  {
+    digitalWrite(Relay, LOW);
+    Serial.println("Relay : turn OFF");
   }
 }
