@@ -14,7 +14,8 @@
 
 ## Circult Diagram
 ![Circult](https://github.com/Oak-surachet007x/Mini-PLC/blob/main/circuit%20diagram.png)
-
+## testing
+![result](https://github.com/Oak-surachet007x/Mini-PLC/blob/main/result.png)
 
 ***for Mini Project 05366036 3(2-2) Microcontroller &amp; Interfacing.  ( Industry Physics,   School of Science KMITL )***
 
